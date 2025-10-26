@@ -1,11 +1,15 @@
 package com.innowise.demo.serserviceapp.service;
 
+import com.innowise.demo.serserviceapp.dto.UserDto;
+import com.innowise.demo.serserviceapp.mapper.UserMapper;
 import com.innowise.demo.serserviceapp.model.User;
 import com.innowise.demo.serserviceapp.repository.UserRepository;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -14,23 +18,26 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    public User createUser(User user) {
-        return userRepository.save(user);
+    @Autowired
+    private UserMapper userMapper;
+
+    public UserDto createUser(UserDto userDto) {
+        User user = userMapper.toEntity(userDto);
+        User savedUser = userRepository.save(user);
+        return userMapper.toDto(savedUser);
     }
 
-    public Optional<User> getUserById(Long id) {
-        return userRepository.findById(id);
+    public Optional<UserDto> getUserById(Long id) {
+        return userRepository.findById(id).map(userMapper::toDto);
+    }
+    public Page<UserDto> getAllUsers(Pageable pageable) {
+        return userRepository.findAll(pageable).map(userMapper::toDto);
+    }
+    public Optional<UserDto> getUserByEmail(String email) {
+        return userRepository.findByEmail(email).map(userMapper::toDto);
     }
 
-    public Page<User> getAllUsers(Pageable pageable) {
-        return userRepository.findAll(pageable);
-    }
-
-    public Optional<User> getUserByEmail(String email) {
-        return userRepository.findByEmail(email);
-    }
-
-    public User updateUser(Long id, User userDetails) {
+    public UserDto updateUser(Long id, @Valid UserDto userDetails) {
         Optional<User> optionalUser = userRepository.findById(id);
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
@@ -38,11 +45,13 @@ public class UserService {
             user.setSurname(userDetails.getSurname());
             user.setBirthDate(userDetails.getBirthDate());
             user.setEmail(userDetails.getEmail());
-            return userRepository.save(user);
+            User savedUser = userRepository.save(user);
+            return userMapper.toDto(savedUser);
         }
         return null;
     }
 
+    @Transactional
     public void deleteUser(Long id) {
         userRepository.deleteById(id);
     }
