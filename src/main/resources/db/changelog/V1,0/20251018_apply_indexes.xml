@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.24.xsd">
+
+    <changeSet id="3" author="assistant">
+        <createIndex indexName="idx_users_email" tableName="users" schemaName="public">
+            <column name="email"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="4" author="assistant">
+        <createIndex indexName="idx_card_user_id" tableName="card_info" schemaName="public">
+            <column name="user_id"/>
+        </createIndex>
+
+        <createIndex indexName="idx_card_number" tableName="card_info" schemaName="public">
+            <column name="number"/>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>

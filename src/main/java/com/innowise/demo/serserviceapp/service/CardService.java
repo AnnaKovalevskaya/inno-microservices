@@ -1,0 +1,46 @@
+package com.innowise.demo.serserviceapp.service;
+
+import com.innowise.demo.serserviceapp.dto.CardInfoDto;
+import com.innowise.demo.serserviceapp.mapper.CardInfoMapper;
+import com.innowise.demo.serserviceapp.model.CardInfo;
+import com.innowise.demo.serserviceapp.repository.CardRepository;
+import com.innowise.demo.serserviceapp.exception.CardNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
+
+@Service
+public class CardService {
+    @Autowired
+    private CardRepository cardRepository;
+
+    @Autowired
+    private CardInfoMapper cardInfoMapper;
+
+    public CardInfoDto createCard(CardInfoDto cardDto) {
+        CardInfo card = cardInfoMapper.toEntity(cardDto);
+        CardInfo savedCard = cardRepository.save(card);
+        return cardInfoMapper.toDto(savedCard);
+    }
+
+    public Optional<CardInfoDto> getCardById(Long id) {
+        CardInfo card = cardRepository.findById(id).orElseThrow(() -> new CardNotFoundException("Card not found with id: " + id));
+        return Optional.of(cardInfoMapper.toDto(card));
+    }
+
+    public Page<CardInfoDto> getAllCards(Pageable pageable) {
+        return cardRepository.findAll(pageable).map(cardInfoMapper::toDto);
+    }
+
+    @Transactional
+    public void deleteCard(Long id) {
+        if (!cardRepository.existsById(id)) {
+            throw new CardNotFoundException("Card not found with id: " + id);
+        }
+        cardRepository.deleteById(id);
+    }
+}
