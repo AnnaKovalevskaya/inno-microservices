@@ -2,12 +2,15 @@ package com.innowise.demo.serserviceapp.controller;
 
 import com.innowise.demo.serserviceapp.dto.CardInfoDto;
 import com.innowise.demo.serserviceapp.service.CardService;
+import com.innowise.demo.serserviceapp.exception.CardNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 
 import java.util.Optional;
 
@@ -18,24 +21,28 @@ public class CardController {
     private CardService cardService;
 
     @PostMapping
-    public CardInfoDto createCard(@Valid @RequestBody CardInfoDto cardDto) {
-        return cardService.createCard(cardDto);
+    public ResponseEntity<CardInfoDto> createCard(@Valid @RequestBody CardInfoDto cardDto) {
+        CardInfoDto createdCard = cardService.createCard(cardDto);
+        return new ResponseEntity<>(createdCard, HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
-    public Optional<CardInfoDto> getCardById(@PathVariable Long id) {
-        return cardService.getCardById(id);
+    public ResponseEntity<CardInfoDto> getCardById(@PathVariable Long id) {
+        CardInfoDto card = cardService.getCardById(id).orElseThrow(() -> new CardNotFoundException("Card not found"));
+        return ResponseEntity.ok(card);
     }
 
     @GetMapping
-    public Page<CardInfoDto> getAllCards(@RequestParam(defaultValue = "0") int page,
-                                         @RequestParam(defaultValue = "10") int size) {
+    public ResponseEntity<Page<CardInfoDto>> getAllCards(@RequestParam(defaultValue = "0") int page,
+                                                         @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
-        return cardService.getAllCards(pageable);
+        Page<CardInfoDto> cards = cardService.getAllCards(pageable);
+        return ResponseEntity.ok(cards);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteCard(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteCard(@PathVariable Long id) {
         cardService.deleteCard(id);
+        return ResponseEntity.noContent().build();
     }
 }

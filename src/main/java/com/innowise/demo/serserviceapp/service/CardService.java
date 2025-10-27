@@ -4,6 +4,7 @@ import com.innowise.demo.serserviceapp.dto.CardInfoDto;
 import com.innowise.demo.serserviceapp.mapper.CardInfoMapper;
 import com.innowise.demo.serserviceapp.model.CardInfo;
 import com.innowise.demo.serserviceapp.repository.CardRepository;
+import com.innowise.demo.serserviceapp.exception.CardNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,7 +28,8 @@ public class CardService {
     }
 
     public Optional<CardInfoDto> getCardById(Long id) {
-        return cardRepository.findById(id).map(cardInfoMapper::toDto);
+        CardInfo card = cardRepository.findById(id).orElseThrow(() -> new CardNotFoundException("Card not found with id: " + id));
+        return Optional.of(cardInfoMapper.toDto(card));
     }
 
     public Page<CardInfoDto> getAllCards(Pageable pageable) {
@@ -36,6 +38,9 @@ public class CardService {
 
     @Transactional
     public void deleteCard(Long id) {
+        if (!cardRepository.existsById(id)) {
+            throw new CardNotFoundException("Card not found with id: " + id);
+        }
         cardRepository.deleteById(id);
     }
 }
