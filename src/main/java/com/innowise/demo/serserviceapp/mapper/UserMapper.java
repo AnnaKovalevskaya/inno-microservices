@@ -2,13 +2,29 @@ package com.innowise.demo.serserviceapp.mapper;
 
 import com.innowise.demo.serserviceapp.dto.UserDto;
 import com.innowise.demo.serserviceapp.model.User;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
+import org.springframework.stereotype.Component;
 
-@Mapper(componentModel = "spring")
-public interface UserMapper {
-    UserDto toDto(User user);
+@Component
+public class UserMapper {
+    public UserDto toDto(User user) {
+        if (user == null) return null;
+        UserDto dto = new UserDto();
+        dto.setId(user.getId());
+        dto.setName(user.getName());
+        dto.setSurname(user.getSurname());
+        dto.setBirthDate(user.getBirthDate());
+        dto.setEmail(user.getEmail());
+        return dto;
+    }
 
-    @Mapping(target = "cards", ignore = true)
-    User toEntity(UserDto userDto);
+    public User toEntity(UserDto dto) {
+        if (dto == null) return null;
+        User user = new User();
+        user.setId(dto.getId());
+        user.setName(dto.getName());
+        user.setSurname(dto.getSurname());
+        user.setBirthDate(dto.getBirthDate());
+        user.setEmail(dto.getEmail());
+        return user;
+    }
 }

@@ -8,7 +8,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -28,6 +27,4 @@ public class UserDto {
     @Email(message = "Email should be valid")
     @NotBlank(message = "Email is required")
     private String email;
-
-    private List<CardInfoDto> cards;
 }

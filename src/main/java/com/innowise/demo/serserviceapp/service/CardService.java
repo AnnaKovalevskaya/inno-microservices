@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.cache.annotation.CacheEvict;
 
 import java.util.Optional;
 
@@ -21,6 +22,8 @@ public class CardService {
     @Autowired
     private CardInfoMapper cardInfoMapper;
 
+    @Transactional
+    @CacheEvict(value = "users", allEntries = true)
     public CardInfoDto createCard(CardInfoDto cardDto) {
         CardInfo card = cardInfoMapper.toEntity(cardDto);
         CardInfo savedCard = cardRepository.save(card);
@@ -37,6 +40,7 @@ public class CardService {
     }
 
     @Transactional
+    @CacheEvict(value = "users", allEntries = true)
     public void deleteCard(Long id) {
         if (!cardRepository.existsById(id)) {
             throw new CardNotFoundException("Card not found with id: " + id);
