@@ -12,8 +12,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
 
-import java.util.Optional;
-
 @RestController
 @RequestMapping("/api/cards")
 public class CardController {
@@ -38,6 +36,12 @@ public class CardController {
         Pageable pageable = PageRequest.of(page, size);
         Page<CardInfoDto> cards = cardService.getAllCards(pageable);
         return ResponseEntity.ok(cards);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<CardInfoDto> updateCard(@PathVariable Long id, @Valid @RequestBody CardInfoDto cardDto) {
+        CardInfoDto updatedCard = cardService.updateCard(id, cardDto);
+        return ResponseEntity.ok(updatedCard);
     }
 
     @DeleteMapping("/{id}")

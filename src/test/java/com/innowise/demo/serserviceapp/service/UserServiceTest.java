@@ -52,8 +52,8 @@ class UserServiceTest {
 
     @Test
     void getUserById_shouldReturnUser() {
-        User user = new User(1L, "Elon ", "Musk ", LocalDate.of(1971 , 6, 28), "elon@gmail.com", null);
-        UserDto userDto = new UserDto(1L, "Elon ", "Musk ", LocalDate.of(1971 , 6, 28), "elon@gmail.com");
+        User user = new User(1L, "Elon", "Musk", LocalDate.of(1971, 6, 28), "elon@gmail.com", null);
+        UserDto userDto = new UserDto(1L, "Elon", "Musk", LocalDate.of(1971, 6, 28), "elon@gmail.com");
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(userMapper.toDto(user)).thenReturn(userDto);
@@ -74,9 +74,9 @@ class UserServiceTest {
     @Test
     void getAllUsers_shouldReturnPagedUsers() {
         Pageable pageable = PageRequest.of(0, 10);
-        User user = new User(1L, "Charles ", "Chaplin ", LocalDate.of(1889 , 4, 16 ), "charles@gmail.com", null);
+        User user = new User(1L, "Charles", "Chaplin", LocalDate.of(1889, 4, 16), "charles@gmail.com", null);
         Page<User> userPage = new PageImpl<>(List.of(user), pageable, 1);
-        UserDto userDto = new UserDto(1L, "Charles ", "Chaplin ", LocalDate.of(1889 , 4, 16 ), "charles@gmail.com");
+        UserDto userDto = new UserDto(1L, "Charles", "Chaplin", LocalDate.of(1889, 4, 16), "charles@gmail.com");
         Page<UserDto> expectedPage = new PageImpl<>(List.of(userDto), pageable, 1);
 
         when(userRepository.findAll(pageable)).thenReturn(userPage);
@@ -89,8 +89,8 @@ class UserServiceTest {
 
     @Test
     void getUserByEmail_shouldReturnUser() {
-        User user = new User(1L, "Walter ", "Disney ", LocalDate.of(1901, 12, 5), "walter@gmail.com", null);
-        UserDto userDto = new UserDto(1L, "Walter ", "Disney ", LocalDate.of(1901, 12, 5), "walter@gmail.com");
+        User user = new User(1L, "Walter", "Disney", LocalDate.of(1901, 12, 5), "walter@gmail.com", null);
+        UserDto userDto = new UserDto(1L, "Walter", "Disney", LocalDate.of(1901, 12, 5), "walter@gmail.com");
 
         when(userRepository.findByEmail("walter@example.com")).thenReturn(Optional.of(user));
         when(userMapper.toDto(user)).thenReturn(userDto);
@@ -103,10 +103,10 @@ class UserServiceTest {
 
     @Test
     void updateUser_shouldReturnUpdatedUser() {
-        UserDto userDto = new UserDto(null, "Marilyn ", "Monroe ", LocalDate.of(1926 , 6, 1), "marilyn@gmail.com");
-        User existingUser = new User(1L, "Albert ", "Einstein", LocalDate.of(1879 , 3, 14), "albert@gmail.com", null);
-        User updatedUser = new User(1L, "Marilyn ", "Monroe ", LocalDate.of(1926 , 6, 1), "marilyn@gmail.com", null);
-        UserDto expectedDto = new UserDto(1L, "Albert ", "Einstein", LocalDate.of(1879 , 3, 14), "albert@gmail.com");
+        UserDto userDto = new UserDto(null, "Marilyn", "Monroe", LocalDate.of(1926, 6, 1), "marilyn@gmail.com");
+        User existingUser = new User(1L, "Albert", "Einstein", LocalDate.of(1879, 3, 14), "albert@gmail.com", null);
+        User updatedUser = new User(1L, "Marilyn", "Monroe", LocalDate.of(1926, 6, 1), "marilyn@gmail.com", null);
+        UserDto expectedDto = new UserDto(1L, "Marilyn", "Monroe", LocalDate.of(1926, 6, 1), "marilyn@gmail.com");
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(existingUser));
         when(userRepository.save(existingUser)).thenReturn(updatedUser);

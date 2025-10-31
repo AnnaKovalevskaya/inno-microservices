@@ -15,7 +15,6 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.EnableCaching;
 
-
 import java.util.Optional;
 
 @Service
@@ -31,9 +30,7 @@ public class UserService {
     private RedisTemplate<String, Object> redisTemplate;
 
     public UserDto createUser(UserDto userDto) {
-        System.out.println("UserDto: " + userDto);
         User user = userMapper.toEntity(userDto);
-        System.out.println("Mapped User: " + user);  // Проверьте, что поля не NULL
         User savedUser = userRepository.save(user);
         return userMapper.toDto(savedUser);
     }
@@ -67,7 +64,7 @@ public class UserService {
     }
 
     @Transactional
-    @CacheEvict(value = "users", allEntries = true)
+    @CacheEvict(value = "users", allEntries = true)  // Очищаем весь кэш при удалении
     public void deleteUser(Long id) {
         if (!userRepository.existsById(id)) {
             throw new UserNotFoundException("User not found with id: " + id);

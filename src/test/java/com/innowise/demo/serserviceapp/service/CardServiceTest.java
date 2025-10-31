@@ -5,6 +5,7 @@ import com.innowise.demo.serserviceapp.exception.CardNotFoundException;
 import com.innowise.demo.serserviceapp.mapper.CardInfoMapper;
 import com.innowise.demo.serserviceapp.model.CardInfo;
 import com.innowise.demo.serserviceapp.repository.CardRepository;
+import com.innowise.demo.serserviceapp.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -29,6 +30,9 @@ class CardServiceTest {
     private CardRepository cardRepository;
 
     @Mock
+    private UserRepository userRepository;
+
+    @Mock
     private CardInfoMapper cardInfoMapper;
 
     @InjectMocks
@@ -36,10 +40,11 @@ class CardServiceTest {
 
     @Test
     void createCard_shouldReturnCreatedCard() {
-        CardInfoDto cardDto = new CardInfoDto(null, "1234567890123456", "Anna Kovalevskaja", LocalDate.of(2001, 9, 19));
-        CardInfo card = new CardInfo(1L, null, "1234567890123456", "Anna Kovalevskaja", LocalDate.of(2001, 9, 19));
-        CardInfoDto expectedDto = new CardInfoDto(1L, "1234567890123456", "Anna Kovalevskaja", LocalDate.of(2001, 9, 19));
+        CardInfoDto cardDto = new CardInfoDto(null, 1L, "1234567890123456", "Anna Kovalevskaja", LocalDate.of(2025, 9, 19));
+        CardInfo card = new CardInfo(1L, null, "1234567890123456", "Anna Kovalevskaja", LocalDate.of(2025, 9, 19));
+        CardInfoDto expectedDto = new CardInfoDto(1L, 1L, "1234567890123456", "Anna Kovalevskaja", LocalDate.of(2025, 9, 19));
 
+        when(userRepository.findById(1L)).thenReturn(Optional.of(new com.innowise.demo.serserviceapp.model.User()));
         when(cardInfoMapper.toEntity(cardDto)).thenReturn(card);
         when(cardRepository.save(card)).thenReturn(card);
         when(cardInfoMapper.toDto(card)).thenReturn(expectedDto);
@@ -52,8 +57,8 @@ class CardServiceTest {
 
     @Test
     void getCardById_shouldReturnCard() {
-        CardInfo card = new CardInfo(1L, null, "1234567890123456", "Anna Kovalevskaja", LocalDate.of(2001, 9, 19));
-        CardInfoDto cardDto = new CardInfoDto(1L, "1234567890123456", "Anna Kovalevskaja", LocalDate.of(2001, 9, 19));
+        CardInfo card = new CardInfo(1L, null, "1234567890123456", "Anna Kovalevskaja", LocalDate.of(2025, 9, 19));
+        CardInfoDto cardDto = new CardInfoDto(1L, 1L, "1234567890123456", "Anna Kovalevskaja", LocalDate.of(2025, 9, 19));
 
         when(cardRepository.findById(1L)).thenReturn(Optional.of(card));
         when(cardInfoMapper.toDto(card)).thenReturn(cardDto);
@@ -74,9 +79,9 @@ class CardServiceTest {
     @Test
     void getAllCards_shouldReturnPagedCards() {
         Pageable pageable = PageRequest.of(0, 10);
-        CardInfo card = new CardInfo(1L, null, "1234567890123456", "Anna Kovalevskaja", LocalDate.of(2001, 9, 19));
+        CardInfo card = new CardInfo(1L, null, "1234567890123456", "Anna Kovalevskaja", LocalDate.of(2025, 9, 19));
         Page<CardInfo> cardPage = new PageImpl<>(List.of(card), pageable, 1);
-        CardInfoDto cardDto = new CardInfoDto(1L, "1234567890123456", "Anna Kovalevskaja", LocalDate.of(2001, 9, 19));
+        CardInfoDto cardDto = new CardInfoDto(1L, 1L, "1234567890123456", "Anna Kovalevskaja", LocalDate.of(2025, 9, 19));
         Page<CardInfoDto> expectedPage = new PageImpl<>(List.of(cardDto), pageable, 1);
 
         when(cardRepository.findAll(pageable)).thenReturn(cardPage);
@@ -85,6 +90,24 @@ class CardServiceTest {
         Page<CardInfoDto> result = cardService.getAllCards(pageable);
 
         assertEquals(expectedPage.getContent(), result.getContent());
+    }
+
+    @Test
+    void updateCard_shouldReturnUpdatedCard() {
+        CardInfoDto cardDto = new CardInfoDto(null, 1L, "9876543210987654", "John Doe", LocalDate.of(2026, 12, 31));
+        com.innowise.demo.serserviceapp.model.User user = new com.innowise.demo.serserviceapp.model.User();
+        user.setId(1L);  // Инициализируем id пользователя
+        CardInfo existingCard = new CardInfo(1L, user, "1234567890123456", "Anna Kovalevskaja", LocalDate.of(2025, 9, 19));
+        CardInfoDto expectedDto = new CardInfoDto(1L, 1L, "9876543210987654", "John Doe", LocalDate.of(2026, 12, 31));
+
+        when(cardRepository.findById(1L)).thenReturn(Optional.of(existingCard));
+        when(cardRepository.save(existingCard)).thenReturn(existingCard);
+        when(cardInfoMapper.toDto(existingCard)).thenReturn(expectedDto);
+
+        CardInfoDto result = cardService.updateCard(1L, cardDto);
+
+        assertEquals(expectedDto, result);
+        verify(cardRepository).save(existingCard);
     }
 
     @Test

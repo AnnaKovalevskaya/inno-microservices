@@ -14,6 +14,9 @@ import java.time.LocalDate;
 public class CardInfoDto {
     private Long id;
 
+    @NotNull(message = "User ID is required")
+    private Long userId;
+
     @NotBlank(message = "Number is required")
     private String number;
 
